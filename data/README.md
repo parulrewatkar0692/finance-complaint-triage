@@ -204,3 +204,34 @@ lines: JSON validity, product accuracy and macro F1, issue accuracy (overall and
 product), out-of-scope recall, false refusals, exact refusal text, citation validity and the reply
 rules, each with a bootstrap 95% confidence interval. `--judge` adds the judge's scores and
 `--self-test` checks the scorer on the gold labels.
+
+## 6. Baseline: base model without fine-tuning (2026-10-23)
+
+Qwen2.5-7B-Instruct as is (4-bit NF4, greedy, at most 400 new tokens), run by notebook step 12 on a
+Colab T4 with the same system prompt and passages as the fine-tuning files, and scored by
+`eval/run.py` on all 170 test rows. These are the "before" numbers for the fine-tuned model.
+Brackets are bootstrap 95% confidence intervals.
+
+| Metric | All (n=170) | Without template overlap (n=161) |
+| --- | --- | --- |
+| JSON valid | 0.947 [0.912, 0.976] | 0.944 |
+| Product accuracy | 0.488 [0.418, 0.559] | 0.478 |
+| Product macro F1 | 0.500 [0.421, 0.556] | 0.501 |
+| Issue accuracy | 0.159 [0.106, 0.212] | 0.161 |
+| Issue accuracy, product right | 0.325 [0.222, 0.430] | 0.338 |
+| Out-of-scope recall | 0.450 [0.227, 0.682] | 0.450 |
+| False refusals | 0.027 [0.006, 0.054] | 0.028 |
+| Exact refusal text | 0.450 [0.227, 0.682] | 0.450 |
+| Citations valid | 0.841 [0.788, 0.888] | 0.857 |
+| Reply rules passed | 0.393 [0.315, 0.473] | 0.397 |
+
+What it shows: the base model almost always returns valid JSON, but it gets the product right
+about half the time and the exact issue label about one time in six, catches fewer than half of
+the out-of-scope requests, and fewer than 40% of its replies pass the reply rules. These are the
+gaps fine-tuning should close. Removing the 9 near-template test complaints changes little.
+
+The run was interrupted once by a GPU out-of-memory error and resumed from the saved answers, so
+88 answers were generated in batches of 8 in input order and 82 in batches sorted by length.
+Greedy decoding with different batch padding can change an answer slightly. Predictions and the
+full report (`baseline/predictions_base.jsonl`, `baseline/report_base.json`) are in the Colab
+output folder and the downloaded zip, not in this repository.

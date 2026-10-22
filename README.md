@@ -26,6 +26,8 @@ Score the model on `sft/test.jsonl` with `python eval/run.py predictions.jsonl`.
 
 **Baseline:** step 12 runs Qwen2.5-7B-Instruct without fine-tuning on the test set and scores it,
 which gives the "before" numbers. It needs a GPU runtime (T4 is enough).
+First result (170 test rows): product accuracy 48.8%, issue accuracy 15.9%, out-of-scope
+recall 45%, valid JSON 94.7%, replies passing the rules 39.3%. Full table in `data/README.md`.
 
 The complaint files, and the fine-tuning files built from them, are not stored here. The notebook rebuilds them from an archived public
 snapshot, and the snapshot still needs instructor approval. Course prototype: not for use with
