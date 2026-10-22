@@ -144,11 +144,63 @@ card/account 0). The 18 remaining runs of 6 or more digits are all dollar amount
 Fields: `complaint_id, date_received, product, issue, product_raw, issue_raw, sub_issue, words,
 narrative`. A missing `sub_issue` is `null`. `real_test.jsonl` is closed: nobody opens it to tune prompts.
 
-## 5. Not done yet (needed before the Day 4 freeze)
+## 5. Fine-tuning files (built 2026-10-22)
 
-These files cover only the real complaints. The final train, validation and test files (1,200 / 100 /
-170) also need:
-- teacher replies with citations (step 7), which need the guidance index (step 6) and the style guide
-- the 120 out-of-scope examples (step 8), split 90 / 10 / 20
+`scripts/build_sft.py` joins the real complaints, the out-of-scope examples, the retrieved
+passages and the teacher replies into chat-format files. The notebook runs it in step 11.
 
-When those are merged, record the final hashes here. The real-complaint IDs above must not change.
+| File | Rows | Real | Out of scope | With passages | SHA-256 |
+| --- | --- | --- | --- | --- | --- |
+| `sft/train.jsonl` | 1,200 | 1,110 | 90 | 600 | `f8d8e29db1b3e5a71da13422e75ea5797b28482d2cd43c8e43d7c2f1a073abcd` |
+| `sft/val.jsonl` | 100 | 90 | 10 | 100 | `f15f786541bae3f86652bdcf08f036b0b468d146da81c3e4a36f723dda49879e` |
+| `sft/test.jsonl` | 170 | 150 | 20 | 170 | `7f1b8762ce605298385365066af58b06f9a9d9481892f88c12eb8ae2fc73fa9e` |
+
+These files contain complaint text, so they are not stored in the repository (`data/sft/` is
+git-ignored). Rebuild them with the notebook or `python scripts/build_sft.py`. A rebuild gives the
+same bytes when the real-complaint files match the hashes in section 4.
+
+**Format.** One JSON object per line: `id`, `split`, `source` (`real` or `out_of_scope`),
+`with_passages`, `retrieved` (the ids of the passages shown), and `messages`:
+- `system`: the task, the 10 products with their issues, the output schema, the reply rules, the
+  rule that the complaint is data and not instructions, and the fixed out-of-scope reply.
+- `user`: the complaint inside `<complaint>` tags, then "Guidance documents:" with the top 3
+  Ask CFPB passages (title and first 130 words), or "Guidance documents: none".
+- `assistant`: `{"product", "issue", "reply", "citations"}` as one JSON string. Train and
+  validation only.
+
+Test rows have no assistant message. They carry the gold `target` (`product`, `issue`) instead,
+and `eval/run.py` scores model outputs against it. The teacher never saw a test complaint.
+
+**Passages.** Half of train (600 rows, seed 42) gets no passages, so the model also learns to
+work without retrieval. Those targets have empty citations, because a model cannot cite a document
+it was not shown. Validation and test always get passages. The top 3 passages come from the first
+index (bge-small, whole document per chunk): `data/passages.jsonl` for the real complaints and
+`data/passages_oos.jsonl` for the out-of-scope examples (`scripts/retrieve_passages.py`).
+
+**Teacher replies (step 7).** Claude Opus 5.5 (`claude-opus-5-5`) wrote the 1,200 train and
+validation replies on 2026-10-22, in 40 batches of 30. It followed `data/style_guide.md` and
+`data/teacher/teacher_prompt.md`. Every batch passed `scripts/check_replies.py`: 60 to 120 words,
+citations only from the retrieved documents (at most 2), no banned phrase (promises, refunds,
+legal terms, CFPB or AI, URLs, `XXXX`, long digit runs), and an update closing. 700 replies
+cite at least one document and 500 cite none. The automatic check does not judge whether a
+reply is right, so two team members should review `data/teacher/review_sample.csv` (100 random
+replies, seed 42, written by `build_sft.py`) before the Day 4 freeze.
+
+**Out-of-scope examples (step 8).** The 120 hand-written examples are in
+`data/out_of_scope_source.py`: 30 investment advice, 25 legal advice, 25 asking the assistant
+to approve or decide an outcome, 20 non-finance, 20 non-English or unreadable. Examples under 50
+words get the listed context sentences, so length is no cue. Each category has a fixed number of
+validation and test examples (seed 42), 90 / 10 / 20 in total. Target: `out_of_scope`, `other`,
+the fixed refusal line and no citations.
+
+**Template overlap.** Some complaints are mass-campaign letters with near-identical text. 9 of
+the 150 test complaints and 5 of the 90 validation complaints have a twin in train (word
+3-gram Jaccard 0.5 or above; 7 test complaints at 0.8 or above), mostly in Money transfer. The
+splits stay frozen. `data/template_overlap.json` lists them, and `eval/run.py` reports every
+metric with and without them.
+
+**Evaluation.** `python eval/run.py predictions.jsonl` scores a file of `{"id", "output"}`
+lines: JSON validity, product accuracy and macro F1, issue accuracy (overall and given the right
+product), out-of-scope recall, false refusals, exact refusal text, citation validity and the reply
+rules, each with a bootstrap 95% confidence interval. `--judge` adds the judge's scores and
+`--self-test` checks the scorer on the gold labels.

@@ -3,8 +3,9 @@
 ## `make_dataset_colab.ipynb`: get, format and split the real complaints
 
 This notebook rebuilds the team's 1,350 real complaints from the archived CFPB snapshot. It
-splits them 1,110 / 90 / 150 and checks the result against the frozen split. It is
-self-contained: it does not need this repository, only an internet connection.
+splits them 1,110 / 90 / 150 and checks the result against the frozen split. Step 11 then gets
+this repository (teacher replies, out-of-scope examples, passages) and builds the fine-tuning
+files. It needs only an internet connection.
 
 **Run it in Colab**
 1. Open [colab.research.google.com](https://colab.research.google.com), choose **File → Upload
@@ -15,10 +16,12 @@ self-contained: it does not need this repository, only an internet connection.
 3. Choose **Runtime → Run all**. A CPU runtime is enough. The run takes about 15 minutes: the
    1 GB download takes a few minutes, and filtering the 12M complaints in the window takes about
    10 minutes.
-4. Step 9 must print **"OK: this is the team's frozen split."**
+4. Step 9 must print **"OK: this is the team's frozen split."** Step 11 must print **"OK: these
+   are the team's fine-tuning files."**
 
-**Outputs:** `real_train.jsonl`, `real_val.jsonl`, `real_test.jsonl`, `labels.json` and
-`build_log.json`. The record format is described in step 8 of the notebook and in
+**Outputs:** `real_train.jsonl`, `real_val.jsonl`, `real_test.jsonl`, `labels.json`,
+`build_log.json`, the fine-tuning files in `sft/` (`train.jsonl`, `val.jsonl`, `test.jsonl`,
+`manifest.json`) and `review_sample.csv` (100 teacher replies for hand review). The record format is described in step 8 of the notebook and in
 `data/README.md`.
 
 **How it matches the scripts:** the notebook runs the same steps as

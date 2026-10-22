@@ -1,0 +1,95 @@
+{
+  "method": "word 3-gram Jaccard to the closest train complaint, >= 0.5",
+  "counts": {
+    "val": 5,
+    "test": 9
+  },
+  "val": [
+    {
+      "complaint_id": "11706802",
+      "product": "Credit reporting or other personal consumer reports",
+      "train_twin": "11709193",
+      "jaccard": 0.708
+    },
+    {
+      "complaint_id": "14334739",
+      "product": "Credit reporting or other personal consumer reports",
+      "train_twin": "12710827",
+      "jaccard": 0.698
+    },
+    {
+      "complaint_id": "11520498",
+      "product": "Money transfer, virtual currency, or money service",
+      "train_twin": "11637271",
+      "jaccard": 0.944
+    },
+    {
+      "complaint_id": "11636559",
+      "product": "Money transfer, virtual currency, or money service",
+      "train_twin": "11637271",
+      "jaccard": 0.748
+    },
+    {
+      "complaint_id": "11638350",
+      "product": "Money transfer, virtual currency, or money service",
+      "train_twin": "11637271",
+      "jaccard": 0.841
+    }
+  ],
+  "test": [
+    {
+      "complaint_id": "11599240",
+      "product": "Checking or savings account",
+      "train_twin": "11613190",
+      "jaccard": 0.817
+    },
+    {
+      "complaint_id": "11651730",
+      "product": "Checking or savings account",
+      "train_twin": "11613190",
+      "jaccard": 0.91
+    },
+    {
+      "complaint_id": "10701611",
+      "product": "Credit reporting or other personal consumer reports",
+      "train_twin": "8254489",
+      "jaccard": 0.55
+    },
+    {
+      "complaint_id": "12071008",
+      "product": "Credit reporting or other personal consumer reports",
+      "train_twin": "11709193",
+      "jaccard": 0.811
+    },
+    {
+      "complaint_id": "11552297",
+      "product": "Money transfer, virtual currency, or money service",
+      "train_twin": "11637271",
+      "jaccard": 0.857
+    },
+    {
+      "complaint_id": "11570893",
+      "product": "Money transfer, virtual currency, or money service",
+      "train_twin": "11573436",
+      "jaccard": 0.929
+    },
+    {
+      "complaint_id": "11644915",
+      "product": "Money transfer, virtual currency, or money service",
+      "train_twin": "11674351",
+      "jaccard": 0.948
+    },
+    {
+      "complaint_id": "11653526",
+      "product": "Money transfer, virtual currency, or money service",
+      "train_twin": "11637271",
+      "jaccard": 0.832
+    },
+    {
+      "complaint_id": "16386836",
+      "product": "Money transfer, virtual currency, or money service",
+      "train_twin": "16389917",
+      "jaccard": 0.683
+    }
+  ]
+}
