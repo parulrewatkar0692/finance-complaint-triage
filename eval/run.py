@@ -104,7 +104,9 @@ def score_rows(test, preds):
             "oos_recall": int(prod == OOS) if is_oos else None,
             "false_refusal": None if is_oos else int(prod == OOS),
             "refusal_exact": int(obj.get("reply") == REFUSAL) if is_oos else None,
-            "citation_valid": int(isinstance(cits, list) and set(cits) <= set(ex["retrieved"])),
+            "citation_valid": int(isinstance(cits, list)
+                                  and all(isinstance(c, str) for c in cits)
+                                  and set(cits) <= set(ex["retrieved"])),
             "reply_rules": None if is_oos else int(reply_ok(obj.get("reply"))),
         }
         rows.append(r)
