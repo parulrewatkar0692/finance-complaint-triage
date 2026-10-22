@@ -1,0 +1,139 @@
+{
+  "products": [
+    {
+      "product": "Credit reporting or other personal consumer reports",
+      "issues": [
+        "Incorrect information on your report",
+        "Improper use of your report",
+        "Problem with a company's investigation into an existing problem",
+        "Problem with fraud alerts or security freezes",
+        "Unable to get your credit report or credit score",
+        "other"
+      ],
+      "eligible_in_window": 1188855,
+      "top_issue_share": 0.9949
+    },
+    {
+      "product": "Debt collection",
+      "issues": [
+        "Attempts to collect debt not owed",
+        "Written notification about debt",
+        "False statements or representation",
+        "Took or threatened to take negative or legal action",
+        "Communication tactics",
+        "other"
+      ],
+      "eligible_in_window": 144187,
+      "top_issue_share": 0.9669
+    },
+    {
+      "product": "Checking or savings account",
+      "issues": [
+        "Managing an account",
+        "Closing an account",
+        "Problem caused by your funds being low",
+        "Problem with a lender or other company charging your account",
+        "Opening an account",
+        "other"
+      ],
+      "eligible_in_window": 81421,
+      "top_issue_share": 0.9949
+    },
+    {
+      "product": "Credit card",
+      "issues": [
+        "Problem with a purchase shown on your statement",
+        "Other features, terms, or problems",
+        "Fees or interest",
+        "Getting a credit card",
+        "Closing your account",
+        "other"
+      ],
+      "eligible_in_window": 74260,
+      "top_issue_share": 0.7167
+    },
+    {
+      "product": "Money transfer, virtual currency, or money service",
+      "issues": [
+        "Other transaction problem",
+        "Fraud or scam",
+        "Unauthorized transactions or other transaction problem",
+        "Trouble accessing funds in your mobile or digital wallet",
+        "Money was not available when promised",
+        "other"
+      ],
+      "eligible_in_window": 73085,
+      "top_issue_share": 0.9094
+    },
+    {
+      "product": "Mortgage",
+      "issues": [
+        "Trouble during payment process",
+        "Struggling to pay mortgage",
+        "Applying for a mortgage or refinancing an existing mortgage",
+        "Closing on a mortgage",
+        "Incorrect information on your report",
+        "other"
+      ],
+      "eligible_in_window": 26296,
+      "top_issue_share": 0.9782
+    },
+    {
+      "product": "Student loan",
+      "issues": [
+        "Dealing with your lender or servicer",
+        "Struggling to repay your loan",
+        "Incorrect information on your report",
+        "Improper use of your report",
+        "Getting a loan",
+        "other"
+      ],
+      "eligible_in_window": 19768,
+      "top_issue_share": 0.9652
+    },
+    {
+      "product": "Vehicle loan or lease",
+      "issues": [
+        "Managing the loan or lease",
+        "Repossession",
+        "Problems at the end of the loan or lease",
+        "Getting a loan or lease",
+        "Incorrect information on your report",
+        "other"
+      ],
+      "eligible_in_window": 18962,
+      "top_issue_share": 0.907
+    },
+    {
+      "product": "Payday loan, title loan, personal loan, or advance loan",
+      "issues": [
+        "Charged fees or interest you didn't expect",
+        "Problem when making payments",
+        "Struggling to pay your loan",
+        "Problem with the payoff process at the end of the loan",
+        "Getting the loan",
+        "other"
+      ],
+      "eligible_in_window": 13120,
+      "top_issue_share": 0.6667
+    },
+    {
+      "product": "Prepaid card",
+      "issues": [
+        "Trouble using the card",
+        "Problem with a purchase or transfer",
+        "Problem getting a card or closing an account",
+        "Unexpected or other fees",
+        "Advertising",
+        "other"
+      ],
+      "eligible_in_window": 7686,
+      "top_issue_share": 0.9965
+    }
+  ],
+  "out_of_scope": "out_of_scope",
+  "window": {
+    "since": "2023-08-25",
+    "until": "2026-06-17"
+  }
+}

@@ -1,0 +1,379 @@
+{
+  "args": {
+    "data": "raw/cfpb_mouwiya/data",
+    "out": "data",
+    "since": "2023-08-25",
+    "until": "2026-06-17",
+    "product_map": "data/product_map.json",
+    "n_products": 10,
+    "min_per_product": 170,
+    "n_issues": 5,
+    "per_product": 135,
+    "split": "111,9,15",
+    "candidates": 1500,
+    "seed": 42
+  },
+  "counts": {
+    "rows_in_window": 12013812,
+    "with_text": 2297181,
+    "unwrapped_bytes_repr": 3110,
+    "eligible_50_400": 1650993,
+    "candidates": 15000,
+    "dropped_exact_duplicate": 901,
+    "dropped_non_english": 16,
+    "dropped_near_duplicate": 371
+  },
+  "pii_masked": {
+    "email": 0,
+    "ssn": 0,
+    "phone": 0,
+    "card_or_account": 0
+  },
+  "products_chosen": [
+    "Credit reporting or other personal consumer reports",
+    "Debt collection",
+    "Checking or savings account",
+    "Credit card",
+    "Money transfer, virtual currency, or money service",
+    "Mortgage",
+    "Student loan",
+    "Vehicle loan or lease",
+    "Payday loan, title loan, personal loan, or advance loan",
+    "Prepaid card"
+  ],
+  "product_counts_eligible": {
+    "Credit reporting or other personal consumer reports": 1188855,
+    "Debt collection": 144187,
+    "Checking or savings account": 81421,
+    "Credit card": 74260,
+    "Money transfer, virtual currency, or money service": 73085,
+    "Mortgage": 26296,
+    "Student loan": 19768,
+    "Vehicle loan or lease": 18962,
+    "Payday loan, title loan, personal loan, or advance loan": 13120,
+    "Prepaid card": 7686,
+    "Debt or credit management": 3342,
+    "Credit reporting, credit repair services, or other personal consumer reports": 11
+  },
+  "raw_product_names_eligible": {
+    "Credit reporting or other personal consumer reports": 1188855,
+    "Debt collection": 144187,
+    "Checking or savings account": 81421,
+    "Credit card": 74260,
+    "Money transfer, virtual currency, or money service": 73085,
+    "Mortgage": 26296,
+    "Student loan": 19768,
+    "Vehicle loan or lease": 18962,
+    "Payday loan, title loan, personal loan, or advance loan": 13120,
+    "Prepaid card": 7686,
+    "Debt or credit management": 3342,
+    "Credit reporting, credit repair services, or other personal consumer reports": 11
+  },
+  "sample_rows": 1350,
+  "sample_other_share": 0.0926,
+  "sample_issue_mix": [
+    {
+      "product": "Checking or savings account",
+      "issue": "Closing an account",
+      "n": 20
+    },
+    {
+      "product": "Checking or savings account",
+      "issue": "Managing an account",
+      "n": 75
+    },
+    {
+      "product": "Checking or savings account",
+      "issue": "Opening an account",
+      "n": 12
+    },
+    {
+      "product": "Checking or savings account",
+      "issue": "Problem caused by your funds being low",
+      "n": 15
+    },
+    {
+      "product": "Checking or savings account",
+      "issue": "Problem with a lender or other company charging your account",
+      "n": 12
+    },
+    {
+      "product": "Checking or savings account",
+      "issue": "other",
+      "n": 1
+    },
+    {
+      "product": "Credit card",
+      "issue": "Closing your account",
+      "n": 15
+    },
+    {
+      "product": "Credit card",
+      "issue": "Fees or interest",
+      "n": 9
+    },
+    {
+      "product": "Credit card",
+      "issue": "Getting a credit card",
+      "n": 13
+    },
+    {
+      "product": "Credit card",
+      "issue": "Other features, terms, or problems",
+      "n": 25
+    },
+    {
+      "product": "Credit card",
+      "issue": "Problem with a purchase shown on your statement",
+      "n": 35
+    },
+    {
+      "product": "Credit card",
+      "issue": "other",
+      "n": 38
+    },
+    {
+      "product": "Credit reporting or other personal consumer reports",
+      "issue": "Improper use of your report",
+      "n": 35
+    },
+    {
+      "product": "Credit reporting or other personal consumer reports",
+      "issue": "Incorrect information on your report",
+      "n": 62
+    },
+    {
+      "product": "Credit reporting or other personal consumer reports",
+      "issue": "Problem with a company's investigation into an existing problem",
+      "n": 37
+    },
+    {
+      "product": "Credit reporting or other personal consumer reports",
+      "issue": "Unable to get your credit report or credit score",
+      "n": 1
+    },
+    {
+      "product": "Debt collection",
+      "issue": "Attempts to collect debt not owed",
+      "n": 56
+    },
+    {
+      "product": "Debt collection",
+      "issue": "Communication tactics",
+      "n": 6
+    },
+    {
+      "product": "Debt collection",
+      "issue": "False statements or representation",
+      "n": 24
+    },
+    {
+      "product": "Debt collection",
+      "issue": "Took or threatened to take negative or legal action",
+      "n": 15
+    },
+    {
+      "product": "Debt collection",
+      "issue": "Written notification about debt",
+      "n": 29
+    },
+    {
+      "product": "Debt collection",
+      "issue": "other",
+      "n": 5
+    },
+    {
+      "product": "Money transfer, virtual currency, or money service",
+      "issue": "Fraud or scam",
+      "n": 23
+    },
+    {
+      "product": "Money transfer, virtual currency, or money service",
+      "issue": "Money was not available when promised",
+      "n": 8
+    },
+    {
+      "product": "Money transfer, virtual currency, or money service",
+      "issue": "Other transaction problem",
+      "n": 63
+    },
+    {
+      "product": "Money transfer, virtual currency, or money service",
+      "issue": "Trouble accessing funds in your mobile or digital wallet",
+      "n": 7
+    },
+    {
+      "product": "Money transfer, virtual currency, or money service",
+      "issue": "Unauthorized transactions or other transaction problem",
+      "n": 15
+    },
+    {
+      "product": "Money transfer, virtual currency, or money service",
+      "issue": "other",
+      "n": 19
+    },
+    {
+      "product": "Mortgage",
+      "issue": "Applying for a mortgage or refinancing an existing mortgage",
+      "n": 13
+    },
+    {
+      "product": "Mortgage",
+      "issue": "Closing on a mortgage",
+      "n": 10
+    },
+    {
+      "product": "Mortgage",
+      "issue": "Incorrect information on your report",
+      "n": 4
+    },
+    {
+      "product": "Mortgage",
+      "issue": "Struggling to pay mortgage",
+      "n": 28
+    },
+    {
+      "product": "Mortgage",
+      "issue": "Trouble during payment process",
+      "n": 79
+    },
+    {
+      "product": "Mortgage",
+      "issue": "other",
+      "n": 1
+    },
+    {
+      "product": "Payday loan, title loan, personal loan, or advance loan",
+      "issue": "Charged fees or interest you didn't expect",
+      "n": 38
+    },
+    {
+      "product": "Payday loan, title loan, personal loan, or advance loan",
+      "issue": "Getting the loan",
+      "n": 11
+    },
+    {
+      "product": "Payday loan, title loan, personal loan, or advance loan",
+      "issue": "Problem when making payments",
+      "n": 20
+    },
+    {
+      "product": "Payday loan, title loan, personal loan, or advance loan",
+      "issue": "Problem with the payoff process at the end of the loan",
+      "n": 13
+    },
+    {
+      "product": "Payday loan, title loan, personal loan, or advance loan",
+      "issue": "Struggling to pay your loan",
+      "n": 12
+    },
+    {
+      "product": "Payday loan, title loan, personal loan, or advance loan",
+      "issue": "other",
+      "n": 41
+    },
+    {
+      "product": "Prepaid card",
+      "issue": "Advertising",
+      "n": 2
+    },
+    {
+      "product": "Prepaid card",
+      "issue": "Problem getting a card or closing an account",
+      "n": 18
+    },
+    {
+      "product": "Prepaid card",
+      "issue": "Problem with a purchase or transfer",
+      "n": 32
+    },
+    {
+      "product": "Prepaid card",
+      "issue": "Trouble using the card",
+      "n": 62
+    },
+    {
+      "product": "Prepaid card",
+      "issue": "Unexpected or other fees",
+      "n": 21
+    },
+    {
+      "product": "Student loan",
+      "issue": "Dealing with your lender or servicer",
+      "n": 90
+    },
+    {
+      "product": "Student loan",
+      "issue": "Getting a loan",
+      "n": 1
+    },
+    {
+      "product": "Student loan",
+      "issue": "Improper use of your report",
+      "n": 3
+    },
+    {
+      "product": "Student loan",
+      "issue": "Incorrect information on your report",
+      "n": 10
+    },
+    {
+      "product": "Student loan",
+      "issue": "Struggling to repay your loan",
+      "n": 27
+    },
+    {
+      "product": "Student loan",
+      "issue": "other",
+      "n": 4
+    },
+    {
+      "product": "Vehicle loan or lease",
+      "issue": "Getting a loan or lease",
+      "n": 14
+    },
+    {
+      "product": "Vehicle loan or lease",
+      "issue": "Incorrect information on your report",
+      "n": 8
+    },
+    {
+      "product": "Vehicle loan or lease",
+      "issue": "Managing the loan or lease",
+      "n": 42
+    },
+    {
+      "product": "Vehicle loan or lease",
+      "issue": "Problems at the end of the loan or lease",
+      "n": 23
+    },
+    {
+      "product": "Vehicle loan or lease",
+      "issue": "Repossession",
+      "n": 32
+    },
+    {
+      "product": "Vehicle loan or lease",
+      "issue": "other",
+      "n": 16
+    }
+  ],
+  "date_range_sample": [
+    "2023-08-26",
+    "2026-06-09"
+  ],
+  "files": {
+    "real_train.jsonl": {
+      "rows": 1110,
+      "sha256": "076df0251f7c22f99c3246cf501acb629bd20a8211cdc2f69c8129d38db020c2"
+    },
+    "real_val.jsonl": {
+      "rows": 90,
+      "sha256": "7ea00d9c19ada7f40aa488313d9696901172d371cb05c3678bc847d2c7b17dd3"
+    },
+    "real_test.jsonl": {
+      "rows": 150,
+      "sha256": "38a5c275f3432c09d4aa8bf899b5a3f646a19837140b41eff90e618921bfbdaa"
+    }
+  }
+}

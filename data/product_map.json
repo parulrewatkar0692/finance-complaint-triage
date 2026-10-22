@@ -1,0 +1,10 @@
+{
+  "window": {"since": "2023-08-25", "until": "2026-06-17"},
+  "note": "The CFPB switched to a new product and issue taxonomy on 2023-08-25. The window starts on that date, so every complaint in it carries the new names and no mapping is applied. The renames are listed for reference only, in case the window is ever widened (issue names also changed then, so a wider window would need an issue map too).",
+  "map": {},
+  "renames_on_2023_08_25_reference_only": {
+    "Credit reporting, credit repair services, or other personal consumer reports": "Credit reporting or other personal consumer reports",
+    "Credit card or prepaid card": "Credit card | Prepaid card (split)",
+    "Payday loan, title loan, or personal loan": "Payday loan, title loan, personal loan, or advance loan"
+  }
+}

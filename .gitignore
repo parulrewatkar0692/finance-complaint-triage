@@ -1,0 +1,19 @@
+# Downloaded snapshot (~1 GB): rebuild with the notebook or the README commands
+/raw/
+
+# Complaint text: rebuilt from the snapshot, checked by SHA-256 in data/README.md
+data/real_*.jsonl
+report/samples.csv
+
+# Search corpus: fetched pages, parsed documents and the index are rebuilt by rag/*.py
+rag/raw/html/
+rag/docs/
+rag/index/
+
+# Logs and local environments
+*.log
+.venv*/
+.vtest/
+__pycache__/
+.ipynb_checkpoints/
+.env
