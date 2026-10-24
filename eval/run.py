@@ -161,7 +161,7 @@ def report(rows, judge):
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("predictions", nargs="?")
-    ap.add_argument("--test", default=os.path.join(ROOT, "data", "sft", "test.jsonl"))
+    ap.add_argument("--test", default=os.path.join(ROOT, "data", "sft", "cfpb_test.jsonl"))
     ap.add_argument("--judge", help="JSONL of {id, scores: {name: number}}")
     ap.add_argument("--out", help="write the full report as JSON here")
     ap.add_argument("--self-test", action="store_true")

@@ -151,9 +151,9 @@ passages and the teacher replies into chat-format files. The notebook runs it in
 
 | File | Rows | Real | Out of scope | With passages | SHA-256 |
 | --- | --- | --- | --- | --- | --- |
-| `sft/train.jsonl` | 1,200 | 1,110 | 90 | 600 | `f8d8e29db1b3e5a71da13422e75ea5797b28482d2cd43c8e43d7c2f1a073abcd` |
-| `sft/val.jsonl` | 100 | 90 | 10 | 100 | `f15f786541bae3f86652bdcf08f036b0b468d146da81c3e4a36f723dda49879e` |
-| `sft/test.jsonl` | 170 | 150 | 20 | 170 | `7f1b8762ce605298385365066af58b06f9a9d9481892f88c12eb8ae2fc73fa9e` |
+| `sft/cfpb_train.jsonl` | 1,200 | 1,110 | 90 | 600 | `f8d8e29db1b3e5a71da13422e75ea5797b28482d2cd43c8e43d7c2f1a073abcd` |
+| `sft/cfpb_val.jsonl` | 100 | 90 | 10 | 100 | `f15f786541bae3f86652bdcf08f036b0b468d146da81c3e4a36f723dda49879e` |
+| `sft/cfpb_test.jsonl` | 170 | 150 | 20 | 170 | `7f1b8762ce605298385365066af58b06f9a9d9481892f88c12eb8ae2fc73fa9e` |
 
 These files contain complaint text, so they are not stored in the repository (`data/sft/` is
 git-ignored). Rebuild them with the notebook or `python scripts/build_sft.py`. A rebuild gives the

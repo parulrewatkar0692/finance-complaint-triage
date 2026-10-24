@@ -13,7 +13,7 @@ the gold labels in `target` and no assistant message: the teacher never saw test
 Inputs   data/real_{train,val,test}.jsonl   (rebuild with scripts/build_dataset.py or the notebook)
          data/passages.jsonl, data/passages_oos.jsonl, data/teacher/batch_*.jsonl
          data/out_of_scope_source.py, data/labels.json
-Outputs  data/sft/{train,val,test}.jsonl, data/sft/manifest.json
+Outputs  data/sft/cfpb_{train,val,test}.jsonl, data/sft/manifest.json
          data/template_overlap.json         (val/test complaints with a near-template twin in train)
          data/teacher/review_sample.csv     (100 random teacher replies for hand review)
 
@@ -176,11 +176,11 @@ def main():
     for split, exs in out.items():
         exs.sort(key=lambda e: e["id"])
         random.Random(f"{SEED}-{split}").shuffle(exs)
-        path = os.path.join(OUT, f"{split}.jsonl")
+        path = os.path.join(OUT, f"cfpb_{split}.jsonl")
         with open(path, "w", encoding="utf-8", newline="\n") as f:
             for e in exs:
                 f.write(json.dumps(e, ensure_ascii=False) + "\n")
-        manifest["files"][f"{split}.jsonl"] = {
+        manifest["files"][f"cfpb_{split}.jsonl"] = {
             "rows": len(exs),
             "real": sum(e["source"] == "real" for e in exs),
             "out_of_scope": sum(e["source"] == "out_of_scope" for e in exs),

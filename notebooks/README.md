@@ -20,7 +20,7 @@ files. It needs only an internet connection.
    are the team's fine-tuning files."**
 
 **Outputs:** `real_train.jsonl`, `real_val.jsonl`, `real_test.jsonl`, `labels.json`,
-`build_log.json`, the fine-tuning files in `sft/` (`train.jsonl`, `val.jsonl`, `test.jsonl`,
+`build_log.json`, the fine-tuning files in `sft/` (`cfpb_train.jsonl`, `cfpb_val.jsonl`, `cfpb_test.jsonl`,
 `manifest.json`) and `review_sample.csv` (100 teacher replies for hand review). On a GPU runtime,
 step 12 adds the base-model baseline: `baseline/predictions_base.jsonl` and
 `baseline/report_base.json`. The record format is described in step 8 of the notebook and in

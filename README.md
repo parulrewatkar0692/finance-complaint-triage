@@ -16,13 +16,13 @@ holds the Week 1 data work: the dataset, ready for fine-tuning, and the evaluati
 **Run in Colab:**
 [open the notebook](https://colab.research.google.com/github/parulrewatkar0692/finance-complaint-triage/blob/main/notebooks/make_dataset_colab.ipynb),
 then choose **Runtime → Run all**. Step 9 checks that you got the team's frozen split. Step 11
-builds the fine-tuning files (`sft/train.jsonl`, `sft/val.jsonl`, `sft/test.jsonl`) and checks
+builds the fine-tuning files (`sft/cfpb_train.jsonl`, `sft/cfpb_val.jsonl`, `sft/cfpb_test.jsonl`) and checks
 them against the team's build.
 
-**Fine-tuning:** each line of `sft/train.jsonl` has `messages` (system, user, assistant), the
+**Fine-tuning:** each line of `sft/cfpb_train.jsonl` has `messages` (system, user, assistant), the
 format that `trl`'s `SFTTrainer` reads directly with Qwen2.5-7B-Instruct's chat template. The
 longest example is about 2,400 tokens, so a maximum sequence length of 3,072 fits all of them.
-Score the model on `sft/test.jsonl` with `python eval/run.py predictions.jsonl`.
+Score the model on `sft/cfpb_test.jsonl` with `python eval/run.py predictions.jsonl`.
 
 **Baseline:** step 12 runs Qwen2.5-7B-Instruct without fine-tuning on the test set and scores it,
 which gives the "before" numbers. It needs a GPU runtime (T4 is enough).
