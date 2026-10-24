@@ -7,7 +7,8 @@ report/samples.csv
 
 # Search corpus: fetched pages, parsed documents and the index are rebuilt by rag/*.py
 rag/raw/html/
-rag/docs/
+rag/docs/*
+!rag/docs/ask_cfpb.jsonl
 rag/index/
 
 # Logs and local environments
