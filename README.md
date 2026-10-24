@@ -32,3 +32,73 @@ recall 45%, valid JSON 94.7%, replies passing the rules 39.3%. Full table in `da
 The complaint files, and the fine-tuning files built from them, are not stored here. The notebook rebuilds them from an archived public
 snapshot, and the snapshot still needs instructor approval. Course prototype: not for use with
 real customers.
+
+## Fine-tuning readiness checklist (24 October 2026)
+
+21 checks: 7 done, 12 partly done, 2 not done. The data and evaluation are solid; the open items are about training, deployment and compliance.
+
+**1. Purpose and goal**
+
+| Check | Status | Evidence |
+| --- | --- | --- |
+| Problem clearly defined | ✅ Done | Complaint in; product, issue, grounded draft reply and citations out, or a polite decline. |
+| Fine-tuning is needed (not only prompting) | ⚠️ Partly | Zero-shot baseline is weak (product 48.8%, issue 15.9%, out-of-scope declined 45%). A few-shot prompt baseline is not tested yet. |
+
+**2. Dataset quality**
+
+| Check | Status | Evidence |
+| --- | --- | --- |
+| Clean: no duplicates, little noise | ✅ Done | Exact and near duplicates removed, non-English dropped, text artifacts fixed, privacy scan done. 9 near-template test complaints listed and reported separately. |
+| Labels accurate and consistent | ⚠️ Partly | Product and issue come from CFPB but are chosen by the customer; label audit not done. Teacher replies pass all rule checks; human review of 100 pending. Citation grounding in progress. |
+| Large enough to avoid overfitting | ⚠️ Partly | 1,200 training examples (about 111 per product): typical for QLoRA, but small. Watch validation loss; 1 to 3 epochs. |
+| Represents the real-world use case | ⚠️ Partly | Balanced 135 per product, while real traffic is skewed. Out-of-scope examples are written, not real. English only, 2023 to 2026. |
+
+**3. Model choice**
+
+| Check | Status | Evidence |
+| --- | --- | --- |
+| Base model suits the domain | ✅ Done | Text instruction model; baseline already returns 94.7% valid JSON. |
+| Supports LoRA / QLoRA | ✅ Done | Standard Hugging Face model; 4-bit loading verified on a Colab T4. |
+| Size fits the compute | ⚠️ Partly | Inference on a T4 verified (after the out-of-memory fix). QLoRA training not tested: 7B with 3,072-token examples is tight on 15 GB. |
+
+**4. Resources and constraints**
+
+| Check | Status | Evidence |
+| --- | --- | --- |
+| Enough compute (GPU, memory) | ⚠️ Partly | Free Colab T4 works for inference; sessions are recycled and GPU time is limited. |
+| Training time and cost estimated | ❌ Not done | Rough guess 2 to 4 hours on a T4 for 2 to 3 epochs; needs a short test run to measure. |
+| Full vs parameter-efficient decided | ✅ Done | QLoRA, as in the proposal. |
+
+**5. Evaluation plan**
+
+| Check | Status | Evidence |
+| --- | --- | --- |
+| Clear metrics defined | ✅ Done | eval/run.py: accuracy, macro F1, out-of-scope recall, false refusals, citation validity, reply rules, 95% ranges. Groundedness in progress; judge model needs an API key. |
+| Separate validation and test sets | ✅ Done | Frozen 100 / 170 split checked by SHA-256; the teacher never saw test complaints. |
+| Baseline to compare against | ⚠️ Partly | Zero-shot base model measured. Must be re-run once the new retriever changes the help pages in the test prompts. |
+
+**6. Reusability**
+
+| Check | Status | Evidence |
+| --- | --- | --- |
+| Generalizes to similar datasets | ⚠️ Partly | Not tested on other data yet. |
+| Know when re-fine-tuning is needed | ⚠️ Partly | New labels, domain, language or writing style need more fine-tuning; not yet documented in detail. |
+| Easy to share or deploy | ⚠️ Partly | Data pipeline shared (GitHub, one-click Colab). Model sharing (adapter upload, inference script or API) not planned yet. |
+
+**7. Ethics and compliance**
+
+| Check | Status | Evidence |
+| --- | --- | --- |
+| Privacy and licensing respected | ⚠️ Partly | Privacy scan: 0 matches; complaint text kept out of the public repo. Snapshot licence needs instructor approval. Confirm the terms for training on Claude-generated replies. |
+| Bias and harmful outputs checked | ❌ Not done | Teacher data filtered for harmful phrases, but no bias analysis or per-product breakdown yet. |
+| Guardrails after fine-tuning | ⚠️ Partly | Human review required by design; no runtime guardrail yet (JSON and label check, citation filter, banned phrases, refusal fallback). |
+
+**Before training, in order:**
+
+1. Finish the grounding work (in progress), then re-run the baseline with the new help pages.
+2. Human review of the 100 teacher replies, and human relevance labels for the test set.
+3. A short QLoRA test run on the T4 to measure memory and training time.
+4. Confirm licensing: snapshot approval and the terms for Claude-generated training data.
+5. Add a per-product score breakdown to eval/run.py as a basic bias check.
+6. Build a small output guardrail script.
+7. Optional: a few-shot prompt baseline.
