@@ -50,19 +50,33 @@ def tokens(text):
     return [w for w in re.findall(r"[a-z0-9]+", text.lower()) if w not in STOP and len(w) > 1]
 
 
+# Sentences about filing a CFPB complaint are boilerplate, not guidance, and match every
+# complaint ("I complained..."); replies must not mention the CFPB either. They are dropped.
+BOILERPLATE = re.compile(r"\bCFPB\b|consumerfinance\.gov|\(855\)|submit (?:a|your) complaint|"
+                         r"your complaint|forward your complaint", re.I)
+MIN_CHUNK_WORDS = 40
+
+
 def chunk_docs(docs):
-    """Split each page into passages of at most CHUNK_WORDS words, on sentence boundaries."""
+    """Split each page into passages of at most CHUNK_WORDS words, on sentence boundaries,
+    without boilerplate sentences; a short last piece is joined to the chunk before it."""
     chunks = []
     for d in docs:
-        sentences = re.split(r"(?<=[.!?])\s+", d["text"].strip())
-        cur = []
+        sentences = [s for s in re.split(r"(?<=[.!?])\s+", d["text"].strip())
+                     if s and not BOILERPLATE.search(s)]
+        pieces, cur = [], []
         for s in sentences:
             if cur and len(" ".join(cur + [s]).split()) > CHUNK_WORDS:
-                chunks.append({"doc_id": d["doc_id"], "title": d["title"], "text": " ".join(cur)})
+                pieces.append(cur)
                 cur = []
             cur.append(s)
         if cur:
-            chunks.append({"doc_id": d["doc_id"], "title": d["title"], "text": " ".join(cur)})
+            if pieces and len(" ".join(cur).split()) < MIN_CHUNK_WORDS:
+                pieces[-1] += cur
+            else:
+                pieces.append(cur)
+        chunks += [{"doc_id": d["doc_id"], "title": d["title"], "text": " ".join(p)}
+                   for p in pieces]
     return chunks
 
 
@@ -110,7 +124,7 @@ def main():
     chunks = chunk_docs(docs)
     print(f"{len(docs)} pages -> {len(chunks)} chunks")
     m = SentenceTransformer(B.MODEL, device=device)
-    cache = os.path.join(B.IDX_DIR, f"chunks_v2_{CHUNK_WORDS}.npy")   # embedding takes ~20 min on CPU
+    cache = os.path.join(B.IDX_DIR, f"chunks_v2_{CHUNK_WORDS}_{len(chunks)}.npy")   # embedding takes ~20 min on CPU
     if os.path.exists(cache) and np.load(cache).shape[0] == len(chunks):
         emb = np.load(cache)
     else:
