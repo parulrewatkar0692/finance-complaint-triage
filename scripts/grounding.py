@@ -19,6 +19,7 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
+sys.path.insert(0, HERE)
 NLI_MODEL = "cross-encoder/nli-deberta-v3-base"
 ENTAILMENT = 1                 # id2label: 0 contradiction, 1 entailment, 2 neutral
 SUPPORT_MIN = 0.5
@@ -121,5 +122,44 @@ def calibrate():
     print(f"wrote {len(pairs)} pairs to {path}")
 
 
+SUPPORT_FILE = os.path.join(ROOT, "data", "teacher", "support.jsonl")
+
+
+def score():
+    """Support of every (teacher reply, shown page) pair for train and val, using the pages the
+    model is shown (data/passages*.jsonl). Writes data/teacher/support.jsonl (ids and scores
+    only, no complaint text) so build_sft.py does not need the NLI model."""
+    import glob
+    import json
+    passages = {}
+    for name in ["passages.jsonl", "passages_oos.jsonl"]:
+        with open(os.path.join(ROOT, "data", name), encoding="utf-8") as f:
+            for r in map(json.loads, f):
+                passages[r["complaint_id"]] = r["passages"]
+    replies = {}
+    for path in sorted(glob.glob(os.path.join(ROOT, "data", "teacher", "batch_*.jsonl"))):
+        with open(path, encoding="utf-8") as f:
+            for r in map(json.loads, f):
+                replies[r["complaint_id"]] = r
+    from build_sft import all_rows, no_passage_ids
+    skip = no_passage_ids(all_rows()[1])          # shown no pages, so never cite
+    ids = sorted(c for c in replies if c not in skip)
+    out = []
+    for n in range(0, len(ids), 50):
+        chunk = ids[n:n + 50]
+        pairs, meta = [], []
+        for cid in chunk:
+            for p in passages[cid]:
+                pairs.append((page_text(p), replies[cid]["reply"]))
+                meta.append((cid, p["doc_id"]))
+        for (cid, doc), s in zip(meta, support_scores(pairs)):
+            out.append({"complaint_id": cid, "doc_id": doc, "support": round(s, 4)})
+        print(f"  {min(n + 50, len(ids))}/{len(ids)} replies", flush=True)
+    with open(SUPPORT_FILE, "w", encoding="utf-8", newline="\n") as f:
+        for r in out:
+            f.write(json.dumps(r) + "\n")
+    print(f"wrote {len(out)} scores to {SUPPORT_FILE}")
+
+
 if __name__ == "__main__":
-    {"calibrate": calibrate}[sys.argv[1]]()
+    {"calibrate": calibrate, "score": score}[sys.argv[1]]()

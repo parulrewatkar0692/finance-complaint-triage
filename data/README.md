@@ -152,7 +152,7 @@ passages and the teacher replies into chat-format files. The notebook runs it in
 | File | Rows | Real | Out of scope | With passages | SHA-256 |
 | --- | --- | --- | --- | --- | --- |
 | `sft/cfpb_train.jsonl` | 1,200 | 1,110 | 90 | 600 | `f8d8e29db1b3e5a71da13422e75ea5797b28482d2cd43c8e43d7c2f1a073abcd` |
-| `sft/cfpb_val.jsonl` | 100 | 90 | 10 | 100 | `f15f786541bae3f86652bdcf08f036b0b468d146da81c3e4a36f723dda49879e` |
+| `sft/cfpb_val.jsonl` | 100 | 90 | 10 | 100 | `1abd516e93244ffde811b99641f56fea69d259a95d3dc466091037f32f911ec6` |
 | `sft/cfpb_test.jsonl` | 170 | 150 | 20 | 170 | `7f1b8762ce605298385365066af58b06f9a9d9481892f88c12eb8ae2fc73fa9e` |
 
 These files contain complaint text, so they are not stored in the repository (`data/sft/` is
@@ -235,3 +235,54 @@ The run was interrupted once by a GPU out-of-memory error and resumed from the s
 Greedy decoding with different batch padding can change an answer slightly. Predictions and the
 full report (`baseline/predictions_base.jsonl`, `baseline/report_base.json`) are in the Colab
 output folder and the downloaded zip, not in this repository.
+
+## 7. Grounding: retrieval, relevance labels and citations (2026-10-24)
+
+Goal: make the replies and citations grounded in the help pages, in three parts.
+
+**1. A second retriever was tried, and the first one is kept.** `rag/retrieve_v2.py` splits pages
+into chunks of up to 120 words (without the "submit a complaint to the CFPB" boilerplate, which
+made up a quarter of the first run's passages), combines dense search (bge-small) with BM25 by
+reciprocal rank fusion, and reranks the top 15 pages with `BAAI/bge-reranker-base`. It ran on a
+Colab T4 (`notebooks/retrieve_v2_colab.ipynb`, about 5 minutes; hours on a CPU) and is saved in
+`data/passages_v2.jsonl`. On the validation labels below it did worse than the first index:
+
+| Retriever | Relevant page in top 3 (90 real complaints) | Relevant share of shown pages |
+| --- | --- | --- |
+| v1: first index (bge-small, whole page) | **62.2%** | **31.5%** |
+| v2: chunks + hybrid + reranker | 52.2% | 23.7% |
+| v2 with a reranker score cut-off (0.02 to 0.5) | 23% to 47% | 25% to 28% |
+
+So the fine-tuning files keep the v1 passages, and the base-model baseline in section 6 stays
+valid. The reranker cut-off did one useful thing: at 0.2 it showed no page for any out-of-scope
+message. Long, rambling complaints are a hard query for the reranker; shorter queries (for
+example the first 100 words, or a summary) are the next thing to try.
+
+**2. Relevance labels.** `scripts/relevance.py sheet` lists, for every validation and test
+complaint, the union of both retrievers' pages in random order (672 validation pairs, 1,142 test
+pairs) in `data/relevance/sheet_{val,test}.csv` (git-ignored: they hold complaint text). A page is
+relevant when it gives guidance that fits the complaint. Claude labelled the validation sheet as a
+draft (`annotator: claude-silver` in `data/relevance/labels_val.jsonl`): 67 of 90 real
+complaints have at least one relevant page among the candidates, and no out-of-scope message
+does. **To do:** two team members label `sheet_test.csv` and import it with
+`python scripts/relevance.py import data/relevance/sheet_test.csv NAME`; human labels replace the
+draft ones and are never overwritten by them. `python scripts/relevance.py eval val` (or `test`)
+compares the retrievers.
+
+**3. Citation check.** `scripts/grounding.py` turns a reply's next steps into statements ("Please
+send a written notice of error" becomes "You can send a written notice of error.") and asks an NLI
+model (`cross-encoder/nli-deberta-v3-base`) whether a cited page entails one of them. Run on the
+653 train and validation replies that are shown pages (`data/teacher/support.jsonl`):
+- The teacher's citations are already grounded at the page level: on validation, **49 of 51
+  point to a page labelled relevant**, and only 6 of the 40 replies that cite nothing were shown a
+  relevant page.
+- Strict entailment is too strict for paraphrased advice: it accepted only 45 of 385 teacher
+  citations, and on validation it rejected 80 of 85 relevant pages while accepting no irrelevant
+  one.
+
+**Result in the files:** targets keep the teacher's citations, minus pages labelled not relevant
+(2 validation citations removed, so `cfpb_val.jsonl` has a new hash; train and test are
+unchanged). `eval/run.py` adds `citation_relevant` (share of cited pages labelled relevant; uses
+`data/relevance/labels_test.jsonl` once the team has labelled test) and, with `--groundedness`,
+the strict `citation_entailed`.
+

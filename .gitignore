@@ -22,3 +22,7 @@ __pycache__/
 # Fine-tuning files and the hand-review sample contain complaint text: rebuilt by scripts/build_sft.py
 data/sft/
 data/teacher/review_sample.csv
+
+# Relevance-labelling sheets contain complaint text: rebuilt by scripts/relevance.py sheet
+data/relevance/sheet_*.csv
+data/relevance/support_sample.csv

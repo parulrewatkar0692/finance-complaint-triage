@@ -10,6 +10,7 @@ holds the Week 1 data work: the dataset, ready for fine-tuning, and the evaluati
 | `scripts/` | The same build as scripts (`explore_cfpb.py`, `build_dataset.py`), retrieval, reply checks, and `build_sft.py` for the fine-tuning files |
 | `data/` | Build record (`README.md`), labels, reply style guide, out-of-scope examples, retrieved passages, teacher replies (`teacher/`) |
 | `eval/` | `run.py`: scores test predictions, with bootstrap confidence intervals |
+| `data/relevance/` | Relevance labels for retrieval and citations (draft labels for validation; test to be labelled by the team) |
 | `report/` | Exploration tables for the full 16.6M-row snapshot |
 | `rag/` | Ask CFPB guidance collector and the first search index (bge-small, FAISS) |
 
@@ -49,7 +50,7 @@ real customers.
 | Check | Status | Evidence |
 | --- | --- | --- |
 | Clean: no duplicates, little noise | ✅ Done | Exact and near duplicates removed, non-English dropped, text artifacts fixed, privacy scan done. 9 near-template test complaints listed and reported separately. |
-| Labels accurate and consistent | ⚠️ Partly | Product and issue come from CFPB but are chosen by the customer; label audit not done. Teacher replies pass all rule checks; human review of 100 pending. Citation grounding in progress. |
+| Labels accurate and consistent | ⚠️ Partly | Product and issue come from CFPB but are chosen by the customer; label audit not done. Teacher replies pass all rule checks; human review of 100 pending. Citations checked: 49 of 51 validation citations point to a relevant page; test relevance labels pending. |
 | Large enough to avoid overfitting | ⚠️ Partly | 1,200 training examples (about 111 per product): typical for QLoRA, but small. Watch validation loss; 1 to 3 epochs. |
 | Represents the real-world use case | ⚠️ Partly | Balanced 135 per product, while real traffic is skewed. Out-of-scope examples are written, not real. English only, 2023 to 2026. |
 
@@ -73,9 +74,9 @@ real customers.
 
 | Check | Status | Evidence |
 | --- | --- | --- |
-| Clear metrics defined | ✅ Done | eval/run.py: accuracy, macro F1, out-of-scope recall, false refusals, citation validity, reply rules, 95% ranges. Groundedness in progress; judge model needs an API key. |
+| Clear metrics defined | ✅ Done | eval/run.py: accuracy, macro F1, out-of-scope recall, false refusals, citation validity, reply rules, 95% ranges. citation_relevant added (grounding); judge model needs an API key. |
 | Separate validation and test sets | ✅ Done | Frozen 100 / 170 split checked by SHA-256; the teacher never saw test complaints. |
-| Baseline to compare against | ⚠️ Partly | Zero-shot base model measured. Must be re-run once the new retriever changes the help pages in the test prompts. |
+| Baseline to compare against | ⚠️ Partly | Zero-shot base model measured; still valid, because the first retriever is kept. |
 
 **6. Reusability**
 
@@ -95,7 +96,7 @@ real customers.
 
 **Before training, in order:**
 
-1. Finish the grounding work (in progress), then re-run the baseline with the new help pages.
+1. Label the test relevance sheet (data/relevance/sheet_test.csv) so citation_relevant can be scored.
 2. Human review of the 100 teacher replies, and human relevance labels for the test set.
 3. A short QLoRA test run on the T4 to measure memory and training time.
 4. Confirm licensing: snapshot approval and the terms for Claude-generated training data.

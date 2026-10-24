@@ -97,3 +97,11 @@ one product but about another topic. For example, student-loan complaints about 
 errors retrieve credit-report dispute answers, which are the right guidance. Credit-card
 purchase disputes retrieve "How do I dispute a charge on my credit card bill?", which is tagged
 `general`.
+
+## Second retriever (2026-10-24): tried, not adopted
+
+`rag/retrieve_v2.py` (chunks, dense + BM25 fusion, `bge-reranker-base`) found a relevant page in the
+top 3 for 52.2% of validation complaints, against 62.2% for the first index, so the first index
+stays. Details and the labels are in `data/README.md`, section 7. Run it on a GPU with
+`notebooks/retrieve_v2_colab.ipynb`.
+
