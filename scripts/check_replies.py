@@ -31,6 +31,12 @@ BANNED = [
 BANNED_RE = [(p, re.compile(p, re.I)) for p in BANNED]
 
 
+def closes_with_update(reply):
+    """True when the last sentence mentions an update, whatever punctuation ends the reply."""
+    sentences = [s for s in re.split(r"[.!?]+(?:\s+|$)", reply.strip()) if s.strip()]
+    return len(sentences) > 1 and "update" in sentences[-1].lower()
+
+
 def check_batch(n, rows, problems):
     path = os.path.join(ROOT, "data", "teacher", f"batch_{n:02d}.jsonl")
     want = rows[n * BATCH:(n + 1) * BATCH]
@@ -57,7 +63,7 @@ def check_batch(n, rows, problems):
         for p, rx in BANNED_RE:
             if rx.search(reply):
                 problems.append((n, cid, f"banned: {p}"))
-        if "update" not in reply.split(".")[-2].lower():
+        if not closes_with_update(reply):
             problems.append((n, cid, "no update closing"))
     return len(got)
 

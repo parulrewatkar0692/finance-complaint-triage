@@ -6,8 +6,9 @@ replies into one example per complaint, in the chat format that Qwen2.5-7B-Instr
 a system message (task, labels, output schema, reply rules), a user message (the complaint in a
 <complaint> block, then the guidance passages), and an assistant message (the target JSON).
 
-Half of the train set (seed 42) gets no passages, so the model also learns to answer without
-retrieval; those targets have empty citations. Val and test always get passages. Test rows carry
+About a quarter of the train set gets no passages, so the model also learns to answer without
+retrieval: half (seed 42) of the train rows whose target cites nothing, that is uncited teacher
+replies and out-of-scope rows (see no_passage_ids). Val and test always get passages. Test rows carry
 the gold labels in `target` and no assistant message: the teacher never saw test complaints.
 
 Citations: the teacher's citations, kept only when the page was shown, and dropped when a
@@ -135,18 +136,18 @@ def sha256(path):
     return h.hexdigest()
 
 
-def no_passage_ids(rows):
-    """Half of the train rows (real and out of scope, seed 42) are shown no passages."""
-    train_ids = sorted(r["complaint_id"] for r in rows if r["split"] == "train")
-    return set(random.Random(SEED).sample(train_ids, len(train_ids) // 2))
+def no_passage_ids(rows, replies):
+    """Train rows shown no passages: half (seed 42) of those whose target cites nothing.
 
-
-def all_rows():
-    real = {s: read_jsonl(os.path.join(DATA, f"real_{s}.jsonl")) for s in ["train", "val", "test"]}
-    rows = [dict(r, split=s, source="real") for s in ["train", "val", "test"] for r in real[s]]
-    rows += [dict(r, product="out_of_scope", issue="other", source="out_of_scope")
-             for r in O.examples()]
-    return real, rows
+    The teacher saw the passages for every train complaint, and a reply that cites a page takes
+    its next step from that page. Hiding the page but keeping the reply would teach the model to
+    give page-specific advice it was not shown, so only uncited replies and out-of-scope rows
+    (about 550, so about 275 rows) are candidates. Rows shown passages still include about 275
+    that cite nothing, so passages are no cue to always cite.
+    """
+    pool = sorted(r["complaint_id"] for r in rows if r["split"] == "train"
+                  and (r["source"] == "out_of_scope" or not replies[r["complaint_id"]]["citations"]))
+    return set(random.Random(SEED).sample(pool, len(pool) // 2))
 
 
 def main():
@@ -159,12 +160,12 @@ def main():
     for path in sorted(glob.glob(os.path.join(DATA, "teacher", "batch_*.jsonl"))):
         for r in read_jsonl(path):
             replies[r["complaint_id"]] = r
-    not_relevant = {}
+    relevance = {}
     for split in ["val", "test"]:
         path = os.path.join(DATA, "relevance", f"labels_{split}.jsonl")
         if os.path.exists(path):
-            not_relevant.update({(r["complaint_id"], r["doc_id"]): r["relevant"]
-                                 for r in read_jsonl(path)})
+            relevance.update({(r["complaint_id"], r["doc_id"]): r["relevant"]
+                              for r in read_jsonl(path)})
     want = {r["complaint_id"] for s in ["train", "val"] for r in real[s]}
     assert set(replies) == want, "teacher replies do not match train + val"
     assert not set(replies) & {r["complaint_id"] for r in real["test"]}
@@ -173,7 +174,7 @@ def main():
     rows += [dict(r, product="out_of_scope", issue="other", source="out_of_scope")
              for r in O.examples()]
 
-    no_rag = no_passage_ids(rows)
+    no_rag = no_passage_ids(rows, replies)
 
     out = {"train": [], "val": [], "test": []}
     for r in rows:
@@ -185,7 +186,7 @@ def main():
         elif split != "test":
             reply = replies[cid]["reply"]
             cits = [c for c in replies[cid]["citations"]
-                    if c in retrieved and not_relevant.get((cid, c)) != 0]
+                    if c in retrieved and relevance.get((cid, c)) != 0]
         messages = [{"role": "system", "content": system},
                     {"role": "user", "content": user_message(r["narrative"], given)}]
         ex = {"id": cid, "split": split, "source": r["source"],

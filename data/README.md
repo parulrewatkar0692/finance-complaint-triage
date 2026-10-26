@@ -171,9 +171,14 @@ same bytes when the real-complaint files match the hashes in section 4.
 Test rows have no assistant message. They carry the gold `target` (`product`, `issue`) instead,
 and `eval/run.py` scores model outputs against it. The teacher never saw a test complaint.
 
-**Passages.** Half of train (600 rows, seed 42) gets no passages, so the model also learns to
-work without retrieval. Those targets have empty citations, because a model cannot cite a document
-it was not shown. Validation and test always get passages. The top 3 passages come from the first
+**Passages.** About a quarter of train gets no passages, so the model also learns to work without
+retrieval. Those targets have empty citations, because a model cannot cite a document it was not
+shown. *Fixed after the Week 1 review:* the first build hid the passages of a random half of train (600 rows),
+but the teacher had seen the passages for every train complaint, so about 325 of those rows kept a
+reply whose next step came from a page the model was not shown. Now only rows whose target cites
+nothing (uncited teacher replies and out-of-scope rows, about 550) are candidates, and half of
+them (seed 42, about 275) get no passages. The real complaints, validation and test are
+unchanged; `cfpb_train.jsonl` has a new hash, to be recorded after the next notebook run. Validation and test always get passages. The top 3 passages come from the first
 index (bge-small, whole document per chunk): `data/passages.jsonl` for the real complaints and
 `data/passages_oos.jsonl` for the out-of-scope examples (`scripts/retrieve_passages.py`).
 
