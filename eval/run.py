@@ -25,7 +25,8 @@ Metrics, each with a bootstrap 95% confidence interval (1,000 resamples, seed 42
   judge_*           mean of each judge score, when --judge is given
 
 Everything is reported on all rows and again without the val/test complaints that have a
-near-template twin in train (data/template_overlap.json).
+near-template twin in train (data/template_overlap.json). Product accuracy, issue accuracy and
+reply rules are also broken down by gold product (point values only), as a basic bias check.
 
 Usage
   python eval/run.py predictions.jsonl
@@ -47,7 +48,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, os.path.join(ROOT, "scripts"))
 from build_sft import REFUSAL  # noqa: E402
-from check_replies import BANNED_RE  # noqa: E402
+from check_replies import BANNED_RE, closes_with_update  # noqa: E402
 
 KEYS = {"product", "issue", "reply", "citations"}
 OOS = "out_of_scope"
@@ -84,8 +85,7 @@ def reply_ok(reply):
         return False
     if any(rx.search(reply) for _, rx in BANNED_RE):
         return False
-    sentences = reply.split(".")
-    return len(sentences) > 1 and "update" in sentences[-2].lower()
+    return closes_with_update(reply)
 
 
 def score_rows(test, preds):
@@ -210,11 +210,24 @@ def bootstrap(rows, judge):
     return ci
 
 
+def by_product(rows):
+    """Per gold product: rows, product and issue accuracy, reply rules (basic bias check)."""
+    out = {}
+    for lab in sorted({r["gold_product"] for r in rows}):
+        part = [r for r in rows if r["gold_product"] == lab]
+        out[lab] = {"n": len(part)}
+        for k in ["product_acc", "issue_acc", "reply_rules"]:
+            vals = [r[k] for r in part if r[k] is not None]
+            out[lab][k] = sum(vals) / len(vals) if vals else None
+    return out
+
+
 def report(rows, judge):
     point = metrics(rows, judge)
     ci = bootstrap(rows, judge)
     return {"n": len(rows),
-            "metrics": {k: {"value": v, "ci95": ci.get(k)} for k, v in point.items()}}
+            "metrics": {k: {"value": v, "ci95": ci.get(k)} for k, v in point.items()},
+            "by_product": by_product(rows)}
 
 
 def main():
@@ -275,6 +288,12 @@ def main():
                 lo, hi = m["ci95"] or (m["value"], m["value"])
                 cells.append(f"{m['value']:.3f} [{lo:.3f}, {hi:.3f}]")
         print(f"{k:26s} {cells[0]:>26s} {cells[1]:>26s}")
+    print(f"\n{'by gold product (all rows)':56s} {'n':>4s} {'product':>8s} {'issue':>8s} "
+          f"{'rules':>8s}")
+    for lab, m in full["all"]["by_product"].items():
+        cells = ["n/a" if m[k] is None else f"{m[k]:.3f}"
+                 for k in ["product_acc", "issue_acc", "reply_rules"]]
+        print(f"{lab[:56]:56s} {m['n']:>4d} {cells[0]:>8s} {cells[1]:>8s} {cells[2]:>8s}")
     if a.out:
         with open(a.out, "w", encoding="utf-8") as f:
             json.dump(full, f, indent=2)

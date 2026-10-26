@@ -37,3 +37,36 @@ other and rebuild.
 
 Before sharing, it was run end to end twice: with pandas 3.0.6 / pyarrow 26 and with
 pandas 2.2.3 / pyarrow 18.1.
+
+## `train_qlora_colab.ipynb`: QLoRA fine-tuning and baselines (Week 2)
+
+Fine-tunes Qwen2.5-7B-Instruct with QLoRA on `sft/cfpb_train.jsonl` and scores it on test with
+`eval/run.py`, **with and without** the guidance passages (the Week 3 RAG comparison needs both).
+`MODE = "baseline"` runs the base model through the same generation code, zero-shot or with
+`FEW_SHOT = 3` (the course plan's Week 1 gate asks for both).
+
+**Run it**
+1. Share one Drive folder: the owner creates `cfpb-capstone`, shares it with the team as Editor,
+   and each member adds a shortcut to it in My Drive ("Shared with me" → right-click →
+   Organize → Add shortcut → My Drive). The owner then runs `make_dataset_colab.ipynb` once with
+   `SAVE_TO_DRIVE = True` and `OUT_DIR = "cfpb-capstone/data"`.
+2. Open this notebook on a **T4 GPU** runtime. Optional: add a Colab secret `WANDB_API_KEY` for
+   W&B; otherwise runs are tracked with MLflow in `MyDrive/cfpb-capstone/data/runs/mlruns`.
+3. In the configuration cell set `MEMBER`, pick a `RUN` (or `MODE = "baseline"`), then
+   **Runtime → Run all**. First time: `SMOKE_STEPS = 20` measures memory and the full-run time.
+
+Checkpoints are saved to Drive, so a recycled session resumes when you run all again. Each run
+saves its scores in its own `runs/<run>/summary.json` (so members finishing at the same time never
+overwrite each other), and `runs/runs.csv` is rebuilt from all of them: the comparison table for
+the report. Storage counts against the folder owner's quota (about 1 to 3 GB per run with
+checkpoints); delete a run's `checkpoints/` once its `adapter/` is saved.
+
+**Runs (course plan: at least two configurations and one ablation; every member runs one job)**
+
+| Run | What changes |
+| --- | --- |
+| `base_0shot`, `base_3shot` | Baselines (`MODE = "baseline"`, `FEW_SHOT = 0` / `3`) |
+| `r16_lr2e-4` | Reference: rank 16, alpha 32, lr 2e-4, 2 epochs, all linear layers |
+| `r64_lr1e-4` | Higher rank, lower learning rate |
+| `r16_attn_only` | LoRA on attention projections only |
+| `ablate_no_oos` | Ablation: no out-of-scope training rows (does refusal come from them?) |
