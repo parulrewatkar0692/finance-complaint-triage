@@ -30,6 +30,11 @@ which gives the "before" numbers. It needs a GPU runtime (T4 is enough).
 First result (170 test rows): product accuracy 48.8%, issue accuracy 15.9%, out-of-scope
 recall 45%, valid JSON 94.7%, replies passing the rules 39.3%. Full table in `data/README.md`.
 
+**Week 2 (fine-tuning):** `notebooks/train_qlora_colab.ipynb` trains the QLoRA runs (two
+configurations and one ablation, as the course plan asks), runs the zero-shot and few-shot
+baselines, and scores everything on test with and without passages into one table
+(`runs/runs.csv`). See `notebooks/README.md`.
+
 The complaint files, and the fine-tuning files built from them, are not stored here. The notebook rebuilds them from an archived public
 snapshot, and the snapshot still needs instructor approval. Course prototype: not for use with
 real customers.
