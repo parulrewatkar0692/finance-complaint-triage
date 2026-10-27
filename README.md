@@ -43,7 +43,7 @@ real customers.
 | Check | Status | Evidence |
 | --- | --- | --- |
 | Problem clearly defined | ✅ Done | Complaint in; product, issue, grounded draft reply and citations out, or a polite decline. |
-| Fine-tuning is needed (not only prompting) | ⚠️ Partly | Zero-shot baseline is weak (product 48.8%, issue 15.9%, out-of-scope declined 45%). A few-shot prompt baseline is not tested yet. |
+| Fine-tuning is needed (not only prompting) | ⚠️ Partly | Zero-shot baseline is weak (product 48.8%, issue 15.9%, out-of-scope declined 45%). A few-shot baseline is required by the course plan's Week 1 gate and is not run yet: the Week 2 training notebook runs it (`MODE = "baseline"`, `FEW_SHOT = 3`) on the IIT GPU from 8 November. |
 
 **2. Dataset quality**
 
@@ -100,6 +100,6 @@ real customers.
 2. Human review of the 100 teacher replies, and human relevance labels for the test set.
 3. A short QLoRA test run on the T4 to measure memory and training time.
 4. Confirm licensing: snapshot approval and the terms for Claude-generated training data.
-5. Add a per-product score breakdown to eval/run.py as a basic bias check.
+5. Done (week1-fixes): eval/run.py prints a per-product breakdown (basic bias check).
 6. Build a small output guardrail script.
-7. Optional: a few-shot prompt baseline.
+7. Few-shot baseline (required by the course plan's Week 1 gate, not optional): run with the Week 2 notebook on the IIT GPU.
