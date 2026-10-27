@@ -144,14 +144,14 @@ card/account 0). The 18 remaining runs of 6 or more digits are all dollar amount
 Fields: `complaint_id, date_received, product, issue, product_raw, issue_raw, sub_issue, words,
 narrative`. A missing `sub_issue` is `null`. `real_test.jsonl` is closed: nobody opens it to tune prompts.
 
-## 5. Fine-tuning files (built 2026-10-22)
+## 5. Fine-tuning files (built 2026-10-22, train rebuilt 2026-10-27)
 
 `scripts/build_sft.py` joins the real complaints, the out-of-scope examples, the retrieved
 passages and the teacher replies into chat-format files. The notebook runs it in step 11.
 
 | File | Rows | Real | Out of scope | With passages | SHA-256 |
 | --- | --- | --- | --- | --- | --- |
-| `sft/cfpb_train.jsonl` | 1,200 | 1,110 | 90 | 600 | `f8d8e29db1b3e5a71da13422e75ea5797b28482d2cd43c8e43d7c2f1a073abcd` |
+| `sft/cfpb_train.jsonl` | 1,200 | 1,110 | 90 | 925 | `97be4213c2faefc32847ba418e566eb912b1975b3d9b04609e87721e31fa234d` |
 | `sft/cfpb_val.jsonl` | 100 | 90 | 10 | 100 | `1abd516e93244ffde811b99641f56fea69d259a95d3dc466091037f32f911ec6` |
 | `sft/cfpb_test.jsonl` | 170 | 150 | 20 | 170 | `7f1b8762ce605298385365066af58b06f9a9d9481892f88c12eb8ae2fc73fa9e` |
 
@@ -174,11 +174,11 @@ and `eval/run.py` scores model outputs against it. The teacher never saw a test 
 **Passages.** About a quarter of train gets no passages, so the model also learns to work without
 retrieval. Those targets have empty citations, because a model cannot cite a document it was not
 shown. *Fixed after the Week 1 review:* the first build hid the passages of a random half of train (600 rows),
-but the teacher had seen the passages for every train complaint, so about 325 of those rows kept a
+but the teacher had seen the passages for every train complaint, so 320 of those rows kept a
 reply whose next step came from a page the model was not shown. Now only rows whose target cites
-nothing (uncited teacher replies and out-of-scope rows, about 550) are candidates, and half of
-them (seed 42, about 275) get no passages. The real complaints, validation and test are
-unchanged; `cfpb_train.jsonl` has a new hash, to be recorded after the next notebook run. Validation and test always get passages. The top 3 passages come from the first
+nothing (460 uncited teacher replies and 90 out-of-scope rows, 550 in all) are candidates, and
+half of them (seed 42, 275 rows) get no passages. The real complaints, validation and test are
+unchanged; `cfpb_train.jsonl` has a new hash (2026-10-27). Validation and test always get passages. The top 3 passages come from the first
 index (bge-small, whole document per chunk): `data/passages.jsonl` for the real complaints and
 `data/passages_oos.jsonl` for the out-of-scope examples (`scripts/retrieve_passages.py`).
 

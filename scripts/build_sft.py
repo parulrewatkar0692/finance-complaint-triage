@@ -150,10 +150,18 @@ def no_passage_ids(rows, replies):
     return set(random.Random(SEED).sample(pool, len(pool) // 2))
 
 
+def all_rows():
+    real = {s: read_jsonl(os.path.join(DATA, f"real_{s}.jsonl")) for s in ["train", "val", "test"]}
+    rows = [dict(r, split=s, source="real") for s in ["train", "val", "test"] for r in real[s]]
+    rows += [dict(r, product="out_of_scope", issue="other", source="out_of_scope")
+             for r in O.examples()]
+    return real, rows
+
+
 def main():
     labels = json.load(open(os.path.join(DATA, "labels.json"), encoding="utf-8"))
     system = system_prompt(labels)
-    real = {s: read_jsonl(os.path.join(DATA, f"real_{s}.jsonl")) for s in ["train", "val", "test"]}
+    real, rows = all_rows()
     passages = {r["complaint_id"]: r["passages"] for name in ["passages.jsonl", "passages_oos.jsonl"]
                 for r in read_jsonl(os.path.join(DATA, name))}
     replies = {}
@@ -169,10 +177,6 @@ def main():
     want = {r["complaint_id"] for s in ["train", "val"] for r in real[s]}
     assert set(replies) == want, "teacher replies do not match train + val"
     assert not set(replies) & {r["complaint_id"] for r in real["test"]}
-
-    rows = [dict(r, split=s, source="real") for s in ["train", "val", "test"] for r in real[s]]
-    rows += [dict(r, product="out_of_scope", issue="other", source="out_of_scope")
-             for r in O.examples()]
 
     no_rag = no_passage_ids(rows, replies)
 

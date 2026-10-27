@@ -142,7 +142,7 @@ def score():
             for r in map(json.loads, f):
                 replies[r["complaint_id"]] = r
     from build_sft import all_rows, no_passage_ids
-    skip = no_passage_ids(all_rows()[1])          # shown no pages, so never cite
+    skip = no_passage_ids(all_rows()[1], replies)  # shown no pages, so never cite
     ids = sorted(c for c in replies if c not in skip)
     out = []
     for n in range(0, len(ids), 50):
